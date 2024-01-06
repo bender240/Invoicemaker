@@ -1,0 +1,99 @@
+import csv 
+newFile = True
+homescreenon = True
+invoiceName = ""
+txtext = ".csv"
+customerName = ""
+descrip = ""
+amountcharged = ""
+GST = ""
+matCost =""
+earningsCreate = True
+def viewEarnings():
+    earningsTotal = 0
+    global earningsCreate 
+    if earningsCreate == True:
+     with open("earnings.csv", 'w', newline='') as earnings_file:
+        writer = csv.writer(earnings_file)
+        writer.writerow(["Invoice Date", "Earnings"])
+    earningsCreate = False
+    with open("earnings.csv", 'r', newline='') as earningsFile:
+        reader = csv.reader(earningsFile)
+        header = next(reader, None)  # Skip the header row
+        for row in reader:
+            earnings_value = row[1].strip()  # Assuming GST is in the second column
+            
+            if earnings_value.replace('.', '').isdigit():  # Check if the value is a digit
+                earningsTotal += float(earnings_value)
+            else:
+                print(f"Skipping non-numeric value: {earnings_value}")
+
+    print(f"Total Earnings: {earningsTotal}")
+
+def viewGst():
+    total_gst = 0
+    with open("gststorage.csv", "r") as gst_file:
+        reader = csv.reader(gst_file)
+        header = next(reader, None)  # Skip the header row
+        for row in reader:
+            gst_value = row[1].strip()  # Assuming GST is in the second column
+
+            if gst_value.isdigit():  # Check if the value is a digit
+                total_gst += fl3oat(gst_value)
+            else:
+                print(f"Skipping non-numeric value: {gst_value}")
+
+    print(f"Total GST: {total_gst}")
+def storeinvoice():
+    global newFile
+# Input Date of Invoice
+    invoiceName = input("Input Date of Invoice: ")
+    userint = invoiceName + ".csv"
+    customerName = input("Input Name of Customer: ")
+    descrip = input("Enter brief description of invoice: ")
+    metCost = input("Enter ammount of material cost:")
+    GST = input("Enter amount of GST (5%): ")
+    while True:
+        try:
+            amountcharged = float(input("Enter the amount charged: "))
+            break  # break the loop if the input is a valid float
+        except ValueError:
+            print("Please enter a valid number for the amount.")
+
+    with open(userint, 'w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(["Invoice Date", invoiceName])
+        writer.writerow(["Customer Name", customerName])
+        writer.writerow(["Description", descrip])
+        writer.writerow(["Amount charged ", amountcharged])
+        writer.writerow(["GST", GST])
+        writer.writerow(["Material Cost",matCost])
+    print("Invoice saved")
+    with open("gststorage.csv", 'a', newline='') as gst_file:
+        gst_writer = csv.writer(gst_file)
+        if newFile == True:
+            gst_writer.writerow(["Invoice Date", "GST"])
+            newFile = False
+        gst_writer.writerow([invoiceName, GST])
+        
+        with open("earnings.csv", 'a', newline='') as earnings_file:
+            earnings_writer = csv.writer(earnings_file)
+            earnings_writer.writerow([invoiceName, amountcharged])
+
+
+def homescreen():
+    while homescreenon:
+        print("1. Upload Invoice ")
+        print("2. View GST")
+        print("3. View Earnings")
+        userint = input("SELECT")  
+        if userint == '1':
+            storeinvoice()
+        elif userint =="2":
+            viewGst()
+        elif userint =="3":
+            viewEarnings()
+
+
+# Call homescreen function to start the program
+homescreen()
